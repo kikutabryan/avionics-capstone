@@ -1,7 +1,7 @@
  %#ok<*PROPLC>
 
 classdef HeliSystem < matlab.System
-    properties (Access = protected)
+    properties (Nontunable)
         % Motor forces and torques
         V_max = 30;
         a_thrust = 0.0053;
@@ -32,87 +32,31 @@ classdef HeliSystem < matlab.System
         m_w = 1.914;  % [kg]
 
         % Moments of inertia
-        J_pitch = m_f * L_h^2 + m_b + L_h^2;  % [kg*m^2]
+        J_pitch;
 
         % Points
-        r_w_init = [
-            -b_2 - b_1 * cos(theta);
-            0;
-            b_1 * sin(theta)
-        ];  % Position of the weight
-        r_b_init = [
-            b_3;
-            -L_h;
-            -b_4;
-        ];  % Position of the back motor
-        r_f_init = [
-            b_3;
-            L_h;
-            -b_4;
-        ];  % Position of the front motor
-        r_offset = [
-            0;
-            0;
-            -b4;
-        ]
+        r_w_init;
+        r_b_init;
+        r_f_init;
+        r_offset;
 
         % Axis
-        ax_pitch = [
-            1;
-            0;
-            0;
-        ];  % Travel axis
-        ax_elev = [
-            0;
-            1;
-            0;
-        ];  % Elevation axis
-        ax_trav = [
-            0;
-            0;
-            1;
-        ];  % Travel axis
+        ax_pitch = [1; 0; 0];  % Travel axis
+        ax_elev = [0; 1; 0];  % Elevation axis
+        ax_trav = [0; 0; 1];  % Travel axis
 
         % Weights
-        W_f = [
-            0;
-            0;
-            m_f * g;
-        ];  % Weight of the front motor
-        W_b = [
-            0;
-            0;
-            m_b * g;
-        ];  % Weight of the back motor
-        W_w = [
-            0;
-            0;
-            m_w * g;
-        ];  % Weight of the counterweight
+        W_f;
+        W_b;
+        W_w;
 
         % Thrusts
-        F_f = [
-            0;
-            0;
-            -1;
-        ];  % Unit vector of thrust
-        F_b = [
-            0;
-            0;
-            -1;
-        ];  % Unit vector of thrust
+        F_f = [0; 0; -1];  % Unit vector of thrust
+        F_b = [0; 0; -1];  % Unit vector of thrust
 
         % Torques (f and b are inverted since they spin in different directions)
-        T_f = [
-            0;
-            0;
-            1;
-        ];  % Unit vector of torque
-        T_b = [
-            0;
-            0;
-            -1;
-        ];  % Unit vector of torque
+        T_f = [0; 0; 1];  % Unit vector of torque
+        T_b = [0; 0; -1];  % Unit vector of torque
     end
 
     methods (Access = public)
@@ -188,6 +132,49 @@ classdef HeliSystem < matlab.System
     end
 
     methods (Access = protected)
+        function setupImpl(obj)
+            obj.J_pitch = obj.m_f * obj.L_h^2 + obj.m_b + obj.L_h^2;  % [kg*m^2]
+
+            % Points
+            obj.r_w_init = [
+                -obj.b_2 - obj.b_1 * cos(obj.theta);
+                0;
+                obj.b_1 * sin(obj.theta)
+            ];  % Position of the weight
+            obj.r_b_init = [
+                obj.b_3;
+                -obj.L_h;
+                -obj.b_4;
+            ];  % Position of the back motor
+            obj.r_f_init = [
+                obj.b_3;
+                obj.L_h;
+                -obj.b_4;
+            ];  % Position of the front motor
+            obj.r_offset = [
+                0;
+                0;
+                -obj.b4;
+            ];
+
+            % Weights
+            obj.W_f = [
+                0;
+                0;
+                obj.m_f * obj.g;
+            ];  % Weight of the front motor
+            obj.W_b = [
+                0;
+                0;
+                obj.m_b * obj.g;
+            ];  % Weight of the back motor
+            obj.W_w = [
+                0;
+                0;
+                obj.m_w * obj.g;
+            ];  % Weight of the counterweight
+        end
+
         function T_net = torque_net(obj, forces, torques, angles, points)
             % Unpackages forces
             F_f = forces("front");
