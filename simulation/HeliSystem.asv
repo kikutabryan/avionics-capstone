@@ -18,8 +18,8 @@ classdef HeliSystem < matlab.System
         a_torque = 0.0003;
         b_torque = 0.0004;
 
-        b_1 = 0.20;
-        b_2 = 0.238;
+        b_1 = 0.22;
+        b_2 = 0.24;
         b_3 = 25.75 * 0.0254;
         b_4 = 0.0513;
 
@@ -29,9 +29,13 @@ classdef HeliSystem < matlab.System
 
         g = 9.81;
 
-        T_stat_pitch = 0.001;
-        T_stat_elev = 0.001;
-        T_stat_trav = 0.005;
+        T_stat_pitch = 0.5;
+        T_stat_elev = 0.5;
+        T_stat_trav = 1;
+
+        T_dyn_pitch = 0.25;
+        T_dyn_elev = 0.25;
+        T_dyn_trav = 0.5;
 
         T_coeff_pitch = 0.1;
         T_coeff_elev = 0.1;
@@ -65,21 +69,12 @@ classdef HeliSystem < matlab.System
         W_f
         W_b
         W_w
-
-        T_dyn_pitch
-        T_dyn_elev
-        T_dyn_trav
     end
 
     methods (Access = protected)
         function setupImpl(obj)
             % Angles
             obj.theta = deg2rad(17.1);  % [rad]
-
-            % Friction
-            obj.T_dyn_pitch = obj.T_stat_pitch / 2;
-            obj.T_dyn_elev = obj.T_stat_elev / 2;
-            obj.T_dyn_trav = obj.T_stat_trav / 2;
 
             % Moments of inertia
             obj.J_pitch = obj.m_f * obj.L_h^2 + obj.m_b + obj.L_h^2;  % [kg*m^2]
@@ -172,9 +167,7 @@ classdef HeliSystem < matlab.System
             T_trav = dot(T_net, ax_trav_rot);
 
             % Determine friction torque about each axis
-            T_pitch = HeliSystem.add_bearing_friction(T_pitch, dot_pitch, obj.T_stat_pitch, obj.T_dyn_pitch, obj.T_coeff_pitch);
-            T_elev = HeliSystem.add_bearing_friction(T_elev, dot_elev, obj.T_stat_elev, obj.T_dyn_elev, obj.T_coeff_elev);
-            T_trav = HeliSystem.add_bearing_friction(T_trav, dot_trav, obj.T_stat_trav, obj.T_dyn_trav, obj.T_coeff_trav);
+            T_pitch = HeliSystem.add_bearing_friction(T_pitch, do)
 
             % Create torque vector
             T = [
@@ -196,7 +189,7 @@ classdef HeliSystem < matlab.System
             alphas = T ./ J;
 
             % Get individual accelerations
-            ddot_pitch = alphas(1);
+            ddot_pitch = 0;
             ddot_elev = alphas(2);
             ddot_trav = alphas(3);
         end
@@ -269,7 +262,7 @@ classdef HeliSystem < matlab.System
                 T_new = 0;
             else
                 % Dynamic friction
-                T_new = T - (T_coeff * omega + T_dyn);
+                T_new = -(T_coeff * omega + T_dyn);
             end
         end
 
