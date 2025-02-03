@@ -1,6 +1,6 @@
 %% Initial Angle Positions
-pitch_0 = deg2rad(0);
-elev_0 = deg2rad(-30);
+pitch_0 = deg2rad(45);
+elev_0 = deg2rad(0);
 trav_0 = deg2rad(0);
 
 %% Initial Angular Velocities
