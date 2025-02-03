@@ -50,9 +50,32 @@ classdef HeliSystem < matlab.System
 
         T_f = [0; 0; 1];
         T_b = [0; 0; -1];
+
+        pitch_max = deg2rad(90);
+        pitch_min = deg2rad(-90);
+
+        elev_max = deg2rad(30);
+        elev_min = deg2rad(-30);
+
+        trav_max = deg2rad(180);
+        trav_min = deg2rad(-180);
     end
 
     properties (Access = protected)
+        ddot_p = 0;
+        ddot_e = 0;
+        ddot_t = 0;
+
+        dot_p = 0;
+        dot_e = 0;
+        dot_t = 0;
+        
+        pitch = 0;
+        elev = 0;
+        trav = 0;
+
+        prev_time = 0;
+
         theta
 
         J_pitch
@@ -124,7 +147,7 @@ classdef HeliSystem < matlab.System
             ];  % Weight of the counterweight
         end
         
-        function [ddot_pitch, ddot_elev, ddot_trav] = stepImpl(obj, V_f, V_b, pitch, elev, trav, dot_pitch, dot_elev, dot_trav)
+        function [pitch, elev, trav] = stepImpl(obj, V_f, V_b)
             % Clamp voltages
             V_f_clamp = obj.clamp_motor_voltage(V_f);
             V_b_clamp = obj.clamp_motor_voltage(V_b);
@@ -149,9 +172,9 @@ classdef HeliSystem < matlab.System
             torques.back = obj.T_b * T_b_mag;
 
             % Create map of angles
-            angles.pitch = pitch;
-            angles.elev = elev;
-            angles.trav = trav;
+            angles.pitch = obj.pitch;
+            angles.elev = obj.elev;
+            angles.trav = obj.trav;
 
             % Compute rotated points
             points.front = HeliSystem.rotation_heli_point(obj.r_f_init, obj.r_offset, angles);
@@ -196,9 +219,35 @@ classdef HeliSystem < matlab.System
             alphas = T ./ J;
 
             % Get individual accelerations
-            ddot_pitch = alphas(1);
-            ddot_elev = alphas(2);
-            ddot_trav = alphas(3);
+            ddot_p = alphas(1);
+            ddot_e = alphas(2);
+            ddot_t = alphas(3);
+
+            % Get the time
+            delta_time = getCurrentTime(obj) - obj.prev_time;
+
+            % Update velocities
+            dot_p = obj.dot_p + (ddot_p + obj.ddot_p) / 2 * delta_time;
+            dot_e = obj.dot_e + (ddot_e + obj.ddot_e) / 2 * delta_time;
+            dot_t = obj.dot_t + (ddot_t + obj.ddot_t) / 2 * delta_time;
+
+            % Update positions
+            pitch = obj.pitch + (dot_p + obj.dot_p) / 2 * delta_time;
+            elev = obj.elev + (dot_e + obj.dot_e) / 2 * delta_time;
+            trav = obj.trav + (dot_t + obj.dot_t) / 2 * delta_time;
+
+            % Set attributes
+            obj.ddot_p = ddot_p;
+            obj.ddot_e = ddot_e;
+            obj.ddot_t = ddot_t;
+            
+            obj.dot_p = dot_p;
+            obj.dot_e = dot_e;
+            obj.dot_t = dot_t;
+
+            obj.pitch = pitch;
+            obj.elev = elev;
+            obj.trav = trav;
         end
 
         function T_net = torque_net(obj, forces, torques, angles, points)
