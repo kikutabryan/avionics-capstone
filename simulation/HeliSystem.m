@@ -41,9 +41,9 @@ classdef HeliSystem < matlab.System
         m_b = 0.721;
         m_w = 1.914;
 
-        ax_pitch = [1; 0; 0];
+        ax_pitch = [-1; 0; 0];
         ax_elev = [0; 1; 0];
-        ax_trav = [0; 0; 1];
+        ax_trav = [0; 0; -1];
 
         F_f = [0; 0; -1];
         F_b = [0; 0; -1];
@@ -181,7 +181,7 @@ classdef HeliSystem < matlab.System
             % Compute rotated axes of rotation
             ax_pitch_rot = obj.rotation_pitch(obj.ax_pitch, angles);
             ax_elev_rot = obj.rotation_elev(obj.ax_elev, angles);
-            ax_trav_rot = obj.rotation_trav(obj.ax_trav);
+            ax_trav_rot = obj.ax_trav;
 
             % Compute net torque
             T_net = obj.torque_net(forces, torques, angles, points);
@@ -192,9 +192,9 @@ classdef HeliSystem < matlab.System
             T_trav = dot(T_net, ax_trav_rot);
 
             % Determine friction torque about each axis
-            T_pitch = HeliSystem.add_bearing_friction(T_pitch, dot_pitch, obj.T_stat_pitch, obj.T_dyn_pitch, obj.T_coeff_pitch);
-            T_elev = HeliSystem.add_bearing_friction(T_elev, dot_elev, obj.T_stat_elev, obj.T_dyn_elev, obj.T_coeff_elev);
-            T_trav = HeliSystem.add_bearing_friction(T_trav, dot_trav, obj.T_stat_trav, obj.T_dyn_trav, obj.T_coeff_trav);
+            T_pitch = HeliSystem.add_bearing_friction(T_pitch, obj.dot_p, obj.T_stat_pitch, obj.T_dyn_pitch, obj.T_coeff_pitch);
+            T_elev = HeliSystem.add_bearing_friction(T_elev, obj.dot_e, obj.T_stat_elev, obj.T_dyn_elev, obj.T_coeff_elev);
+            T_trav = HeliSystem.add_bearing_friction(T_trav, obj.dot_t, obj.T_stat_trav, obj.T_dyn_trav, obj.T_coeff_trav);
 
             % Create torque vector
             T = [
@@ -410,10 +410,6 @@ classdef HeliSystem < matlab.System
             trav = angles.trav;
             R_z = HeliSystem.rotation_matrix(3, -trav);
             ax_elev_rot = R_z * ax_elev;
-        end
-    
-        function ax_trav_rot = rotation_trav(ax_trav)
-            ax_trav_rot = -ax_trav;
         end
 
         function J = moment_of_inertia(masses, points, axis)
