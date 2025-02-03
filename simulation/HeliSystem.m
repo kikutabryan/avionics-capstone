@@ -59,6 +59,8 @@ classdef HeliSystem < matlab.System
 
         trav_max = deg2rad(180);
         trav_min = deg2rad(-180);
+
+        theta = deg2rad(17.1);
     end
 
     properties (Access = protected)
@@ -75,8 +77,6 @@ classdef HeliSystem < matlab.System
         trav = 0;
 
         prev_time = 0;
-
-        theta
 
         J_pitch
 
@@ -96,9 +96,6 @@ classdef HeliSystem < matlab.System
 
     methods (Access = protected)
         function setupImpl(obj)
-            % Angles
-            obj.theta = deg2rad(17.1);  % [rad]
-
             % Friction
             obj.T_dyn_pitch = obj.T_stat_pitch / 2;
             obj.T_dyn_elev = obj.T_stat_elev / 2;
@@ -224,7 +221,8 @@ classdef HeliSystem < matlab.System
             ddot_t = alphas(3);
 
             % Get the time
-            delta_time = getCurrentTime(obj) - obj.prev_time;
+            curr_time = getCurrentTime(obj);
+            delta_time = curr_time - obj.prev_time;
 
             % Update velocities
             dot_p = obj.dot_p + (ddot_p + obj.ddot_p) / 2 * delta_time;
@@ -235,6 +233,11 @@ classdef HeliSystem < matlab.System
             pitch = obj.pitch + (dot_p + obj.dot_p) / 2 * delta_time;
             elev = obj.elev + (dot_e + obj.dot_e) / 2 * delta_time;
             trav = obj.trav + (dot_t + obj.dot_t) / 2 * delta_time;
+
+            % Enforce bounds
+            pitch = HeliSystem.enforce_bounds(pitch, obj.pitch_max, obj.pitch_min);
+            elev = HeliSystem.enforce_bounds(elev, obj.elev_max, obj.elev_min);
+            trav = HeliSystem.enforce_bounds(trav, obj.trav_max, obj.trav_min);
 
             % Set attributes
             obj.ddot_p = ddot_p;
@@ -248,6 +251,8 @@ classdef HeliSystem < matlab.System
             obj.pitch = pitch;
             obj.elev = elev;
             obj.trav = trav;
+
+            obj.prev_time = curr_time;
         end
 
         function T_net = torque_net(obj, forces, torques, angles, points)
@@ -312,6 +317,16 @@ classdef HeliSystem < matlab.System
     end
 
     methods (Static)
+        function theta_bounded = enforce_bounds(theta, upper, lower)
+            if theta > upper
+                theta_bounded = upper;
+            elseif theta < lower
+                theta_bounded = lower;
+            else
+                theta_bounded = theta;
+            end
+        end
+
         function T_new = add_bearing_friction(T, omega, T_stat, T_dyn, T_coeff)
             if omega == 0 && abs(T) < T_stat
                 % Static friction
