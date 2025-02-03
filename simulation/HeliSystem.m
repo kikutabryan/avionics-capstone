@@ -51,6 +51,10 @@ classdef HeliSystem < matlab.System
         T_f = [0; 0; 1];
         T_b = [0; 0; -1];
 
+        pitch_init = deg2rad(0);
+        elev_init = deg2rad(0);
+        trav_init = deg2rad(0);
+
         pitch_max = deg2rad(90);
         pitch_min = deg2rad(-90);
 
@@ -71,12 +75,12 @@ classdef HeliSystem < matlab.System
         dot_p = 0;
         dot_e = 0;
         dot_t = 0;
-        
-        pitch = 0;
-        elev = 0;
-        trav = 0;
 
         prev_time = 0;
+
+        pitch
+        elev
+        trav
 
         J_pitch
 
@@ -96,10 +100,15 @@ classdef HeliSystem < matlab.System
 
     methods (Access = protected)
         function setupImpl(obj)
+            % Initial angles
+            obj.pitch = obj.pitch_init;
+            obj.elev = obj.elev_init;
+            obj.trav = obj.trav_init;
+
             % Friction
-            obj.T_dyn_pitch = obj.T_stat_pitch / 2;
-            obj.T_dyn_elev = obj.T_stat_elev / 2;
-            obj.T_dyn_trav = obj.T_stat_trav / 2;
+            obj.T_dyn_pitch = obj.T_stat_pitch / 5;
+            obj.T_dyn_elev = obj.T_stat_elev / 5;
+            obj.T_dyn_trav = obj.T_stat_trav / 5;
 
             % Moments of inertia
             obj.J_pitch = obj.m_f * obj.L_h^2 + obj.m_b + obj.L_h^2;  % [kg*m^2]
@@ -179,7 +188,7 @@ classdef HeliSystem < matlab.System
             points.weight = HeliSystem.rotation_body_point(obj.r_w_init, angles);
 
             % Compute rotated axes of rotation
-            ax_pitch_rot = obj.rotation_pitch(obj.ax_pitch, angles);
+            % ax_pitch_rot = obj.rotation_pitch(obj.ax_pitch, angles);
             ax_elev_rot = obj.rotation_elev(obj.ax_elev, angles);
             ax_trav_rot = obj.ax_trav;
 
@@ -187,7 +196,7 @@ classdef HeliSystem < matlab.System
             T_net = obj.torque_net(forces, torques, angles, points);
 
             % Resolve torque about rotation axis
-            T_pitch = dot(T_net, ax_pitch_rot);
+            T_pitch = obj.L_h * (F_f_mag - F_b_mag);
             T_elev = dot(T_net, ax_elev_rot);
             T_trav = dot(T_net, ax_trav_rot);
 
@@ -235,9 +244,9 @@ classdef HeliSystem < matlab.System
             trav = obj.trav + (dot_t + obj.dot_t) / 2 * delta_time;
 
             % Enforce bounds
-            pitch = HeliSystem.enforce_bounds(pitch, obj.pitch_max, obj.pitch_min);
-            elev = HeliSystem.enforce_bounds(elev, obj.elev_max, obj.elev_min);
-            trav = HeliSystem.enforce_bounds(trav, obj.trav_max, obj.trav_min);
+            [pitch, dot_p, ddot_p] = HeliSystem.enforce_bounds(pitch, dot_p, ddot_p, obj.pitch_max, obj.pitch_min);
+            [elev, dot_e, ddot_e] = HeliSystem.enforce_bounds(elev, dot_e, ddot_e, obj.elev_max, obj.elev_min);
+            [trav, dot_t, ddot_t] = HeliSystem.enforce_bounds(trav, dot_t, ddot_t, obj.trav_max, obj.trav_min);
 
             % Set attributes
             obj.ddot_p = ddot_p;
@@ -251,7 +260,7 @@ classdef HeliSystem < matlab.System
             obj.pitch = pitch;
             obj.elev = elev;
             obj.trav = trav;
-
+            
             obj.prev_time = curr_time;
         end
 
@@ -317,13 +326,19 @@ classdef HeliSystem < matlab.System
     end
 
     methods (Static)
-        function theta_bounded = enforce_bounds(theta, upper, lower)
-            if theta > upper
-                theta_bounded = upper;
-            elseif theta < lower
-                theta_bounded = lower;
+        function [a_bound, dot_a_bound, ddot_a_bound] = enforce_bounds(a, dot_a, ddot_a, upper, lower)
+            if a > upper
+                a_bound = upper;
+                dot_a_bound = 0;
+                ddot_a_bound = 0;
+            elseif a < lower
+                a_bound = lower;
+                dot_a_bound = 0;
+                ddot_a_bound = 0;
             else
-                theta_bounded = theta;
+                a_bound = a;
+                dot_a_bound = dot_a;
+                ddot_a_bound = ddot_a;
             end
         end
 
