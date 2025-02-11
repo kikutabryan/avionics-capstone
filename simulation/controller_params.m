@@ -23,7 +23,7 @@ max_dott = deg2rad(15);
 min_dott = -deg2rad(15);
 
 %% Travel Angle Controller
-Kp_t = 0.45;
+Kp_t = 0.4;
 Ki_t = 0.0;
 Kd_t = 0.16;
 % Range of travel rate [deg/s]
