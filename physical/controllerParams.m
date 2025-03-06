@@ -50,13 +50,13 @@ maxElevRate = deg2rad(10);
 minElevRate = -deg2rad(10);
 
 % Elevation rate controller
-KpElevRate = 10.89;
-KiElevRate = 0;
+KpElevRate = 5;
+KiElevRate = 0.5;
 KdElevRate = 0;
 maxIntegralElevRate = inf;
 minIntegralElevRate = -inf;
 maxElevForce = 2;
-minElevForce = 0;
+minElevForce = -2;
 
 % Travel controller
 KpTrav = 0.42;
@@ -68,7 +68,7 @@ maxTravRate = deg2rad(20);
 minTravRate = -deg2rad(20);
 
 % Travel rate controller
-KpTravRate = 2.45;
+KpTravRate = 2.49;
 KiTravRate = 0;
 KdTravRate = 0;
 maxIntegralTravRate = inf;
