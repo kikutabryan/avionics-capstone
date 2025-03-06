@@ -55,8 +55,12 @@ KiElevRate = 0.5;
 KdElevRate = 0;
 maxIntegralElevRate = inf;
 minIntegralElevRate = -inf;
-maxElevForce = 2;
-minElevForce = -2;
+maxElevForce = 1;
+minElevForce = -1;
+
+% Elevation saturation
+maxElevCombForce = 2;
+minElevCombForce = 0;
 
 % Travel controller
 KpTrav = 0.42;
@@ -77,9 +81,9 @@ maxTravForce = 0.9;
 minTravForce = -0.9;
 
 % Compensation coefficients
-aGravityCompensation = 0.001;
-bGravityCompensation = 0.001;
-cGravityCompensation = 0.001;
+aGravityCompensation = 3.5837;
+bGravityCompensation = 2.042;
+cGravityCompensation = 0.3526;
 
 % Tuning reference values
 tuningPitchRef = deg2rad(0);
@@ -88,3 +92,7 @@ tuningTravRef = deg2rad(45);
 tuningPitchRateRef = maxPitchRate;
 tuningElevRateRef = maxElevRate;
 tuningTravRateRef = maxTravRate;
+
+% Load filter coefficients
+filterCoeffs = load('FIR_coefficients.mat');
+filterCoeffs = filterCoeffs.b;
