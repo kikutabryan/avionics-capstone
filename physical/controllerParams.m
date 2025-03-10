@@ -23,40 +23,40 @@ K_DAQ = 10;
 
 %-----[CONTROLLER CONSTANTS]---------------
 % Pitch controller
-KpPitch = 0.42;
+KpPitch = 1.11;
 KiPitch = 0;
-KdPitch = 0;
+KdPitch = 0.3;
 maxIntegralPitch = inf;
 minIntegralPitch = -inf;
-maxPitchRate = deg2rad(20);
-minPitchRate = -deg2rad(20);
+maxPitchRate = deg2rad(35);
+minPitchRate = -deg2rad(35);
 
 % Pitch rate controller
-KpPitchRate = 1.36;
-KiPitchRate = 0;
-KdPitchRate = 0;
+KpPitchRate = 0.78;
+KiPitchRate = 0.2;
+KdPitchRate = 0.2;
 maxIntegralPitchRate = inf;
 minIntegralPitchRate = -inf;
 maxDeltaForce = 0.5;
 minDeltaForce = -0.5;
 
 % Elevation controller
-KpElev = 0.38;
+KpElev = 0.76;
 KiElev = 0;
 KdElev = 0;
 maxIntegralElev = inf;
 minIntegralElev = -inf;
-maxElevRate = deg2rad(10);
-minElevRate = -deg2rad(10);
+maxElevRate = deg2rad(20);
+minElevRate = -deg2rad(20);
 
 % Elevation rate controller
-KpElevRate = 5;
-KiElevRate = 0.5;
-KdElevRate = 0;
+KpElevRate = 5.99;
+KiElevRate = 0.2;
+KdElevRate = 0.5;
 maxIntegralElevRate = inf;
 minIntegralElevRate = -inf;
-maxElevForce = 1;
-minElevForce = -1;
+maxElevForce = 2;
+minElevForce = -2;
 
 % Elevation saturation
 maxElevCombForce = 2;
@@ -83,10 +83,10 @@ minTravForce = -0.9;
 % Compensation coefficients
 aGravityCompensation = 3.5837;
 bGravityCompensation = 2.042;
-cGravityCompensation = 0.3526;
+cGravityCompensation = 0.3;
 
 % Tuning reference values
-tuningPitchRef = deg2rad(0);
+tuningPitchRef = deg2rad(30);
 tuningElevRef = deg2rad(24.5);
 tuningTravRef = deg2rad(45);
 tuningPitchRateRef = maxPitchRate;
