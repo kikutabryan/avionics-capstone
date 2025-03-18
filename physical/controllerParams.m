@@ -22,73 +22,87 @@ R2D = 180/pi;
 K_DAQ = 10;
 
 %-----[CONTROLLER CONSTANTS]---------------
+% Values for faster tuning
+pitch_rate = deg2rad(20);
+pitch_angle = deg2rad(25);
+elev_rate = deg2rad(20);
+elev_angle = deg2rad(25);
+trav_rate = deg2rad(20);
+trav_angle = deg2rad(45);
+
+F_max = 1.239;
+F_delta = 0.310;
+F_max_avail = 1.084;
+F_y_max = 0.976;
+F_x_max = 0.473;
+
 % Pitch controller
-KpPitch = 1.11;
+KpPitch = 0.76;
 KiPitch = 0;
-KdPitch = 0.3;
+KdPitch = 0;
 maxIntegralPitch = inf;
 minIntegralPitch = -inf;
-maxPitchRate = deg2rad(35);
-minPitchRate = -deg2rad(35);
+maxPitchRate = pitch_rate;
+minPitchRate = -pitch_rate;
 
 % Pitch rate controller
-KpPitchRate = 0.78;
-KiPitchRate = 0.2;
-KdPitchRate = 0.2;
-maxIntegralPitchRate = inf;
-minIntegralPitchRate = -inf;
-maxDeltaForce = 0.5;
-minDeltaForce = -0.5;
+KpPitchRate = 0.84;
+KiPitchRate = 0;
+KdPitchRate = 0;
+maxIntegralPitchRate = F_delta;
+minIntegralPitchRate = -F_delta;
+maxDeltaForce = F_delta;
+minDeltaForce = -F_delta;
 
 % Elevation controller
 KpElev = 0.76;
 KiElev = 0;
 KdElev = 0;
-maxIntegralElev = inf;
-minIntegralElev = -inf;
-maxElevRate = deg2rad(20);
-minElevRate = -deg2rad(20);
+maxIntegralElev = elev_rate;
+minIntegralElev = -elev_rate;
+maxElevRate = elev_rate;
+minElevRate = -elev_rate;
 
 % Elevation rate controller
-KpElevRate = 5.99;
-KiElevRate = 0.2;
-KdElevRate = 0.5;
-maxIntegralElevRate = inf;
-minIntegralElevRate = -inf;
-maxElevForce = 2;
-minElevForce = -2;
+KpElevRate = 2.66;
+KiElevRate = 0;
+KdElevRate = 0;
+maxIntegralElevRate = F_y_max;
+minIntegralElevRate = -F_y_max;
+maxElevForce = F_y_max;
+minElevForce = -F_y_max;
 
 % Elevation saturation
-maxElevCombForce = 2;
+maxElevCombForce = F_max_avail;
 minElevCombForce = 0;
 
 % Travel controller
 KpTrav = 0.42;
 KiTrav = 0;
 KdTrav = 0;
-maxIntegralTrav = inf;
-minIntegralTrav = -inf;
-maxTravRate = deg2rad(20);
-minTravRate = -deg2rad(20);
+maxIntegralTrav = trav_rate;
+minIntegralTrav = -trav_rate;
+maxTravRate = trav_rate;
+minTravRate = -trav_rate;
 
 % Travel rate controller
-KpTravRate = 2.49;
+KpTravRate = 1.29;
 KiTravRate = 0;
 KdTravRate = 0;
-maxIntegralTravRate = inf;
-minIntegralTravRate = -inf;
-maxTravForce = 0.9;
-minTravForce = -0.9;
+maxIntegralTravRate = F_x_max;
+minIntegralTravRate = -F_x_max;
+maxTravForce = F_x_max;
+minTravForce = -F_x_max;
 
 % Compensation coefficients
-aGravityCompensation = 3.5837;
-bGravityCompensation = 2.042;
-cGravityCompensation = 0.3;
+aGravityCompensation = 1.8121;
+bGravityCompensation = 1.0325;
+cGravityCompensation = 0.1783;
 
 % Tuning reference values
-tuningPitchRef = deg2rad(30);
-tuningElevRef = deg2rad(24.5);
-tuningTravRef = deg2rad(45);
+tuningPitchRef = pitch_angle;
+tuningElevRef = elev_angle;
+tuningTravRef = trav_angle;
 tuningPitchRateRef = maxPitchRate;
 tuningElevRateRef = maxElevRate;
 tuningTravRateRef = maxTravRate;
