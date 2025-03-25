@@ -1,3 +1,6 @@
+clear;
+clc;
+
 % PLEASE SET THE HELICOPTER NUMBER AND Vsum
 heli = 1;
 
@@ -22,87 +25,91 @@ R2D = 180/pi;
 K_DAQ = 10;
 
 %-----[CONTROLLER CONSTANTS]---------------
-% Values for faster tuning
-pitch_rate = deg2rad(20);
-pitch_angle = deg2rad(25);
-elev_rate = deg2rad(20);
-elev_angle = deg2rad(25);
-trav_rate = deg2rad(20);
-trav_angle = deg2rad(45);
+% Thrust curve
+aThrust = 0.00268;
+bThrust = 0.00111;
 
-F_max = 1.239;
-F_delta = 0.310;
-F_max_avail = 1.084;
-F_y_max = 0.976;
-F_x_max = 0.473;
+% Values for faster tuning
+pitchRate = deg2rad(20);
+pitchAngle = deg2rad(15);
+elevRate = deg2rad(20);
+elevAngle = deg2rad(20);
+travRate = deg2rad(20);
+travAngle = deg2rad(45);
+
+% Force limits
+maxF = 1.239;
+deltaF = 0.372;
+maxFy = 0.948;
+maxFx = 0.459;
 
 % Pitch controller
-KpPitch = 0.76;
+KpPitch = 1.27;
 KiPitch = 0;
 KdPitch = 0;
 maxIntegralPitch = inf;
 minIntegralPitch = -inf;
-maxPitchRate = pitch_rate;
-minPitchRate = -pitch_rate;
+maxPitchRate = pitchRate;
+minPitchRate = -pitchRate;
 
 % Pitch rate controller
-KpPitchRate = 0.84;
-KiPitchRate = 0;
-KdPitchRate = 0;
-maxIntegralPitchRate = F_delta;
-minIntegralPitchRate = -F_delta;
-maxDeltaForce = F_delta;
-minDeltaForce = -F_delta;
+KpPitchRate = 1.01;
+KiPitchRate = 0.1;
+KdPitchRate = 0.15;
+maxIntegralPitchRate = deltaF;
+minIntegralPitchRate = -deltaF;
+maxDeltaForce = deltaF;
+minDeltaForce = -deltaF;
 
 % Elevation controller
-KpElev = 0.76;
+KpElev = 0.95;
 KiElev = 0;
 KdElev = 0;
-maxIntegralElev = elev_rate;
-minIntegralElev = -elev_rate;
-maxElevRate = elev_rate;
-minElevRate = -elev_rate;
+maxIntegralElev = elevRate;
+minIntegralElev = -elevRate;
+maxElevRate = elevRate;
+minElevRate = -elevRate;
 
 % Elevation rate controller
-KpElevRate = 2.66;
-KiElevRate = 0;
-KdElevRate = 0;
-maxIntegralElevRate = F_y_max;
-minIntegralElevRate = -F_y_max;
-maxElevForce = F_y_max;
-minElevForce = -F_y_max;
+KpElevRate = 2.58;
+KiElevRate = 0.2;
+KdElevRate = 0.2;
+maxIntegralElevRate = maxFy;
+minIntegralElevRate = -maxFy;
+maxElevForce = maxFy;
+minElevForce = -maxFy;
 
 % Elevation saturation
-maxElevCombForce = F_max_avail;
+maxElevCombForce = maxF;
 minElevCombForce = 0;
 
 % Travel controller
 KpTrav = 0.42;
 KiTrav = 0;
-KdTrav = 0;
-maxIntegralTrav = trav_rate;
-minIntegralTrav = -trav_rate;
-maxTravRate = trav_rate;
-minTravRate = -trav_rate;
+KdTrav = 0.1;
+maxIntegralTrav = travRate;
+minIntegralTrav = -travRate;
+maxTravRate = travRate;
+minTravRate = -travRate;
 
 % Travel rate controller
-KpTravRate = 1.29;
-KiTravRate = 0;
-KdTravRate = 0;
-maxIntegralTravRate = F_x_max;
-minIntegralTravRate = -F_x_max;
-maxTravForce = F_x_max;
-minTravForce = -F_x_max;
+KpTravRate = 0.3;
+KiTravRate = 0.01;
+KdTravRate = 0.2;
+maxIntegralTravRate = maxFx;
+minIntegralTravRate = -maxFx;
+maxTravForce = maxFx;
+minTravForce = -maxFx;
 
 % Compensation coefficients
 aGravityCompensation = 1.8121;
 bGravityCompensation = 1.0325;
-cGravityCompensation = 0.1783;
+cGravityCompensation = 0.12;
 
 % Tuning reference values
-tuningPitchRef = pitch_angle;
-tuningElevRef = elev_angle;
-tuningTravRef = trav_angle;
+tuningPitchRef = pitchAngle;
+tuningElevRef = elevAngle;
+tuningTravRef = travAngle;
 tuningPitchRateRef = maxPitchRate;
 tuningElevRateRef = maxElevRate;
 tuningTravRateRef = maxTravRate;
