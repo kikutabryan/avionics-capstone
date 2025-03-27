@@ -43,21 +43,12 @@ deltaF = 0.991;
 maxFy = 1.239;
 maxFx = 0.387;
 
-% Pitch controller
-KpPitch = 2.4;
-KiPitch = 0;
-KdPitch = 0.25;
-maxIntegralPitch = inf;
-minIntegralPitch = -inf;
-maxPitchRate = pitchRate;
-minPitchRate = -pitchRate;
-
 % Pitch rate controller
-KpPitchRate = 0.90;
-KiPitchRate = 0.15;
-KdPitchRate = 0.15;
-maxIntegralPitchRate = deltaF;
-minIntegralPitchRate = -deltaF;
+KpPitch = 2.8390;  % 0.991 / deg2rad(20)
+KiPitch = 0.15;
+KdPitch = 0.15;
+maxIntegralPitch = deltaF;
+minIntegralPitch = -deltaF;
 maxDeltaForce = deltaF;
 minDeltaForce = -deltaF;
 
