@@ -32,8 +32,8 @@ bThrust = 0.00111;
 % Values for faster tuning
 pitchRate = deg2rad(60);
 pitchAngle = deg2rad(20);
-elevRate = deg2rad(20);
-elevAngle = deg2rad(20);
+elevRate = deg2rad(15);
+elevAngle = deg2rad(15);
 travRate = deg2rad(45);
 travAngle = deg2rad(45);
 
@@ -44,9 +44,9 @@ maxFy = 1.239;
 maxFx = 0.387;
 
 % Pitch controller
-KpPitch = 2.4;
+KpPitch = 2.85;
 KiPitch = 0;
-KdPitch = 0.25;
+KdPitch = 0.4;
 maxIntegralPitch = inf;
 minIntegralPitch = -inf;
 maxPitchRate = pitchRate;
@@ -54,8 +54,8 @@ minPitchRate = -pitchRate;
 
 % Pitch rate controller
 KpPitchRate = 0.90;
-KiPitchRate = 0.15;
-KdPitchRate = 0.15;
+KiPitchRate = 0.3;
+KdPitchRate = 0.1;
 maxIntegralPitchRate = deltaF;
 minIntegralPitchRate = -deltaF;
 maxDeltaForce = deltaF;
@@ -71,9 +71,9 @@ maxElevRate = elevRate;
 minElevRate = -elevRate;
 
 % Elevation rate controller
-KpElevRate = 3.20;
-KiElevRate = 0.5;
-KdElevRate = 0.45;
+KpElevRate = 4.27;
+KiElevRate = 0.6;
+KdElevRate = 0.2;
 maxIntegralElevRate = maxFy;
 minIntegralElevRate = -maxFy;
 maxElevForce = maxFy;
@@ -93,9 +93,9 @@ maxTravRate = travRate;
 minTravRate = -travRate;
 
 % Travel rate controller
-KpTravRate = 0.1;
-KiTravRate = 0.001;
-KdTravRate = 0.01;
+KpTravRate = 0.3;
+KiTravRate = 0;
+KdTravRate = 0;
 maxIntegralTravRate = maxFx;
 minIntegralTravRate = -maxFx;
 maxTravForce = maxFx;
@@ -115,5 +115,8 @@ tuningElevRateRef = maxElevRate;
 tuningTravRateRef = maxTravRate;
 
 % Load filter coefficients
-filterCoeffs = load('FIR_coefficients.mat');
-filterCoeffs = filterCoeffs.b;
+posFilterCoeffs = load('posFilterCoeffs.mat');
+posFilterCoeffs = posFilterCoeffs.b;
+
+pidFilterCoeffs = load('pidFilterCoeffs.mat');
+pidFilterCoeffs = pidFilterCoeffs.b;
